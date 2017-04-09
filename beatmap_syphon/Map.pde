@@ -6,6 +6,7 @@ class Map {
   Metro metro;
   int timeUnit = 200;
   int xx, yy; // TODO delete
+  ArrayList<TimeNode> timeNodes;
   int beat;
 
   float mX, mY;
@@ -28,11 +29,11 @@ class Map {
 
   void init(int _i, float _x, float _y) {
     id = _i;
-    xx = 0; // TODO -> timeNodes = ArrayList<TimeNode>();
-    yy = 0; //         timeNodes.add(new TimeNode(0, 0));
+    timeNodes = new ArrayList<TimeNode>();
+    timeNodes.add(new TimeNode(this, 0, 0));
     xpos = _x;
     ypos = _y;
-    canvas = createGraphics(len, len);
+    canvas = createGraphics(len, len, P3D);
     metro = new Metro(true, timeUnit);
     beat = metro.frameCount();
     nodes = new Node[nOfc][nOfc];
@@ -85,33 +86,8 @@ class Map {
     }
   }
   void toNext() {
-    // for (int i = 0, n = timeNodes.size(); i < n; i++) {
-    //   timeNodes.get(i).toNext();
-    // }
-
-    nodes[xx][yy].trigger();
-    //TODO the unit of angle
-
-
-    int ot = nodes[xx][yy].ot;
-    while(ot < 0) {
-      ot += 4;
-    }
-    ot %= 4;
-    switch(ot) {
-      case 0 :
-        xx = (xx + nOfc + 1) % nOfc;
-        break;
-      case 1 :
-        yy = (yy + nOfc + 1) % nOfc;
-        break;
-      case 2 :
-        xx = (xx + nOfc - 1) % nOfc;
-        break;
-      case 3 :
-        yy = (yy + nOfc - 1) % nOfc;
-        break;
-      default:
+    for (int i = 0, n = timeNodes.size(); i < n; i++) {
+      timeNodes.get(i).toNext();
     }
   }
   void sendClock(int b) {
@@ -130,6 +106,7 @@ class Map {
 
     canvas.endDraw();
     image(canvas, xpos, ypos);
+    server.sendImage(canvas);
   }
 
   void backgroundDisplay() {
@@ -193,6 +170,9 @@ class Map {
       Node node = nodes[c][r];
       if (activating) {
         node.activate();
+      }
+      else if (addingTimeNode) {
+        timeNodes.add(new TimeNode(this, c, r));
       }
       else if (tabs[TIMES].active) {
         node.setTiming();

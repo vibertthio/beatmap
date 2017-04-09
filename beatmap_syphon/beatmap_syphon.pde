@@ -12,6 +12,10 @@ MidiBus midi;
 import controlP5.*;
 ControlP5 cp5;
 
+//syphon
+import codeanticode.syphon.*;
+SyphonServer server;
+
 //constant
 color _bk = color (50, 50, 50);
 color _gbk = color (80, 80, 80);
@@ -42,6 +46,7 @@ color[] _colorOfStabs = {
 
 //state
 boolean activating = false;
+boolean addingTimeNode = false;
 
 int scl = 40;
 int margin = scl / 2;
@@ -85,9 +90,13 @@ ArrayList<Map> maps;
 PFont pfont;
 ControlFont font;
 
+void settings() {
+  size(900, 900, P3D);
+  PJOGL.profile=1;
+}
 
 void setup() {
-  size(900, 900);
+
   // size(800, 550);
   background(_bk);
 
@@ -102,6 +111,9 @@ void setup() {
 
   //controlP5
   cp5 = new ControlP5(this);
+
+  // Create syhpon server to send frames out.
+  server = new SyphonServer(this, "Processing Syphon");
 
   //font
   pfont = createFont("Arial",12,true);
@@ -136,10 +148,17 @@ void keyPressed() {
   if (key == 't') {
     activating = true;
   }
+  if (key == 'r') {
+    addingTimeNode = true;
+  }
+
 }
 void keyReleased() {
   if (key == 't') {
     activating = false;
+  }
+  if (key == 'r') {
+    addingTimeNode = false;
   }
 }
 

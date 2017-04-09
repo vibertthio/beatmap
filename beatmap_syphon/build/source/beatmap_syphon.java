@@ -7,6 +7,7 @@ import oscP5.*;
 import netP5.*; 
 import themidibus.*; 
 import controlP5.*; 
+import codeanticode.syphon.*; 
 
 import java.util.HashMap; 
 import java.util.ArrayList; 
@@ -32,6 +33,10 @@ MidiBus midi;
 //slider
 
 ControlP5 cp5;
+
+//syphon
+
+SyphonServer server;
 
 //constant
 int _bk = color (50, 50, 50);
@@ -63,6 +68,7 @@ int[] _colorOfStabs = {
 
 //state
 boolean activating = false;
+boolean addingTimeNode = false;
 
 int scl = 40;
 int margin = scl / 2;
@@ -106,9 +112,13 @@ ArrayList<Map> maps;
 PFont pfont;
 ControlFont font;
 
+public void settings() {
+  size(900, 900, P3D);
+  PJOGL.profile=1;
+}
 
 public void setup() {
-  
+
   // size(800, 550);
   background(_bk);
 
@@ -123,6 +133,9 @@ public void setup() {
 
   //controlP5
   cp5 = new ControlP5(this);
+
+  // Create syhpon server to send frames out.
+  server = new SyphonServer(this, "Processing Syphon");
 
   //font
   pfont = createFont("Arial",12,true);
@@ -157,10 +170,17 @@ public void keyPressed() {
   if (key == 't') {
     activating = true;
   }
+  if (key == 'r') {
+    addingTimeNode = true;
+  }
+
 }
 public void keyReleased() {
   if (key == 't') {
     activating = false;
+  }
+  if (key == 'r') {
+    addingTimeNode = false;
   }
 }
 
@@ -192,7 +212,8 @@ class Map {
   float xpos, ypos;
   Metro metro;
   int timeUnit = 200;
-  int xx, yy;
+  int xx, yy; // TODO delete
+  ArrayList<TimeNode> timeNodes;
   int beat;
 
   float mX, mY;
@@ -215,11 +236,11 @@ class Map {
 
   public void init(int _i, float _x, float _y) {
     id = _i;
-    xx = 0;
-    yy = 0;
+    timeNodes = new ArrayList<TimeNode>();
+    timeNodes.add(new TimeNode(this, 0, 0));
     xpos = _x;
     ypos = _y;
-    canvas = createGraphics(len, len);
+    canvas = createGraphics(len, len, P3D);
     metro = new Metro(true, timeUnit);
     beat = metro.frameCount();
     nodes = new Node[nOfc][nOfc];
@@ -272,29 +293,8 @@ class Map {
     }
   }
   public void toNext() {
-    nodes[xx][yy].trigger();
-    //TODO the unit of angle
-
-
-    int ot = nodes[xx][yy].ot;
-    while(ot < 0) {
-      ot += 4;
-    }
-    ot %= 4;
-    switch(ot) {
-      case 0 :
-        xx = (xx + nOfc + 1) % nOfc;
-        break;
-      case 1 :
-        yy = (yy + nOfc + 1) % nOfc;
-        break;
-      case 2 :
-        xx = (xx + nOfc - 1) % nOfc;
-        break;
-      case 3 :
-        yy = (yy + nOfc - 1) % nOfc;
-        break;
-      default:
+    for (int i = 0, n = timeNodes.size(); i < n; i++) {
+      timeNodes.get(i).toNext();
     }
   }
   public void sendClock(int b) {
@@ -313,6 +313,7 @@ class Map {
 
     canvas.endDraw();
     image(canvas, xpos, ypos);
+    server.sendImage(canvas);
   }
 
   public void backgroundDisplay() {
@@ -376,6 +377,9 @@ class Map {
       Node node = nodes[c][r];
       if (activating) {
         node.activate();
+      }
+      else if (addingTimeNode) {
+        timeNodes.add(new TimeNode(this, c, r));
       }
       else if (tabs[TIMES].active) {
         node.setTiming();
@@ -1241,7 +1245,44 @@ class TimeLine {
   public void setLoop() { loop = true; }
   public void set1() { elapsedTime = limit; }
 }
-  public void settings() {  size(900, 900); }
+class TimeNode {
+
+  Map map;
+
+  int xx;
+  int yy;
+
+  TimeNode(Map _m, int _x, int _y) {
+    map = _m;
+    xx = _x;
+    yy = _y;
+  }
+
+  public void toNext() {
+    map.nodes[xx][yy].trigger();
+
+    int ot = map.nodes[xx][yy].ot;
+    while(ot < 0) {
+      ot += 4;
+    }
+    ot %= 4;
+    switch(ot) {
+      case 0 :
+        xx = (xx + nOfc + 1) % nOfc;
+        break;
+      case 1 :
+        yy = (yy + nOfc + 1) % nOfc;
+        break;
+      case 2 :
+        xx = (xx + nOfc - 1) % nOfc;
+        break;
+      case 3 :
+        yy = (yy + nOfc - 1) % nOfc;
+        break;
+      default:
+    }
+  }
+}
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "beatmap_syphon" };
     if (passedArgs != null) {
