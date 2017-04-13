@@ -51,7 +51,7 @@ boolean addingTimeNode = false;
 int scl = 40;
 int margin = scl / 2;
 int gap = 50;
-int nOfc = 8;
+int nOfc = 21;
 int len = nOfc * scl + margin * 2;
 
 // int[] otDefault = {
@@ -63,15 +63,10 @@ int len = nOfc * scl + margin * 2;
 //   1, 2, 2, 2, 2, 2,
 // };
 int[] otDefault = {
-  0, 0, 0, 0, 0, 0, 0, 1,
-  3, 2, 2, 2, 2, 2, 2, 2,
-  0, 0, 0, 0, 0, 0, 0, 1,
-  3, 2, 2, 2, 2, 2, 2, 2,
-  0, 0, 0, 0, 0, 0, 0, 1,
-  3, 2, 2, 2, 2, 2, 2, 2,
-  0, 0, 0, 0, 0, 0, 0, 1,
-  3, 2, 2, 2, 2, 2, 2, 2,
-
+  0, 0, 0, 1,
+  1, 2, 2, 2,
+  0, 0, 0, 1,
+  1, 2, 2, 2,
 };
 int[] midiNotes = {
   36,
@@ -81,14 +76,6 @@ int[] midiNotes = {
   45,
   49,
 };
-// int[] midiNotes = {
-//   72,
-//   73,
-//   74,
-//   75,
-//   76,
-//   77,
-// };
 int[] channels = {
   1,
   1,
@@ -103,13 +90,8 @@ ArrayList<Map> maps;
 PFont pfont;
 ControlFont font;
 
-// performance
-boolean vocal = false;
-
-
-
 void settings() {
-  size(400, 400, P3D);
+  size(900, 900, P3D);
   PJOGL.profile=1;
 }
 
@@ -125,7 +107,6 @@ void setup() {
   //midi
   MidiBus.list();
   midi = new MidiBus(this, "Virtual MIDI Port", "p5 Port");
-  // midi = new MidiBus(this, "vibert", "vibert");
   // midi = new MidiBus(this, 0, 2);
 
   //controlP5
@@ -169,9 +150,6 @@ void keyPressed() {
   }
   if (key == 'r') {
     addingTimeNode = true;
-  }
-  if (key == 'a') {
-    vocal = !vocal;
   }
 
 }

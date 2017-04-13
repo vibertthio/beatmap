@@ -287,10 +287,7 @@ class Node {
     pitch = i % map.pitchStep.length;
   }
   int getPitch() {
-    if (!vocal) {
-      return map.pitchStep[pitch];
-    }
-    return map.pitchStep_2[pitch];
+    return map.pitchStep[pitch];
   }
   void setOct() {
     oct = (oct + 1) % 3;

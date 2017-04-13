@@ -12,19 +12,11 @@ class Map {
   float mX, mY;
 
   Slider sliderOfChannel;
-  // int[] pitchStep = {
-  //   36, 37, 39, 41, 43, 44, 46,
-  //   48, 49, 51, 53, 55, 56, 58,
-  //   60, 61, 63, 65, 67, 68, 70,
-  // };
   int[] pitchStep = {
-    72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84,
+    36, 37, 39, 41, 43, 44, 46,
+    48, 49, 51, 53, 55, 56, 58,
+    60, 61, 63, 65, 67, 68, 70,
   };
-
-  int[] pitchStep_2 = {
-    49, 51, 54, 56, 58, 61, 63, 64, 68, 69, 0, 1, 3,
-  };
-
 
   //state
   boolean mouseOver = false;
@@ -49,7 +41,7 @@ class Map {
     for(int i = 0; i < nOfc; i++) {
       for(int j = 0; j < nOfc; j++) {
         nodes[i][j] = new Node(this, i, j);
-        nodes[i][j].setOt(otDefault[j * nOfc + i]);
+        nodes[i][j].setOt(0);
       }
     }
 
