@@ -223,10 +223,27 @@ class Map {
           else { randomizeOt(); }
           //TODO other random function
         }
+        if (r == RANDOMACTIVE) {
+          randomActive();
+        }
+        if (r == RESET) {
+          reset();
+        }
       }
     }
   }
 
+  void randomActive() {
+    for(int i = 0; i < nOfc; i++) {
+      for(int j = 0; j < nOfc; j++) {
+        if (random(1) > 0.5) {
+          nodes[i][j].active = false;
+        } else {
+          nodes[i][j].active = true;
+        }
+      }
+    }
+  }
   void randomizeOt() {
     for(int i = 0; i < nOfc; i++) {
       for(int j = 0; j < nOfc; j++) {
@@ -252,6 +269,26 @@ class Map {
     for(int i = 0; i < nOfc; i++) {
       for(int j = 0; j < nOfc; j++) {
         nodes[i][j].setPitch(floor(random(pitchStep.length)));
+      }
+    }
+  }
+
+  // RESET
+  void reset() {
+    resetActive();
+    resetOt();
+  }
+  void resetActive() {
+    for(int i = 0; i < nOfc; i++) {
+      for(int j = 0; j < nOfc; j++) {
+        nodes[i][j].active = false;
+      }
+    }
+  }
+  void resetOt() {
+    for(int i = 0; i < nOfc; i++) {
+      for(int j = 0; j < nOfc; j++) {
+        nodes[i][j].setOt(otDefault[j * nOfc + i]);
       }
     }
   }

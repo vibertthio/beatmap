@@ -29,6 +29,9 @@ final int PITCH = 2;
 final int OCTAVE = 3;
 final int ROTATE = 0;
 final int RANDOM = 1;
+final int RANDOMACTIVE = 2;
+final int RESET = 3;
+
 final int NOFMAPS = 1;
 
 color[] _colorOfTabs = {
